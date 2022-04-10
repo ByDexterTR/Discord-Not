@@ -32,33 +32,31 @@ public void WebHookChanged(ConVar cvar, const char[] oldVal, const char[] newVal
 
 public Action Command_Not(int client, int args)
 {
-	char not[256], safename[128], steamid[128], format[512], out[128];
-	
+	char not[256];
 	GetCmdArgString(not, 256);
-	
-	GetClientName(client, safename, 128);
-	
-	GetClientAuthId(client, AuthId_Steam2, steamid, 128);
-	
-	GetCommunityID(steamid, out, 128);
-	Format(out, 128, "http://steamcommunity.com/profiles/%s", out);
-	
 	DiscordWebHook hook = new DiscordWebHook(WebHook);
 	hook.SlackMode = true;
-	
-	Format(format, 512, "%s - %s", safename, steamid);
-	hook.SetUsername(format);
-	hook.SetAvatar("https://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/b8/b80dd994a92a7ce5fdd5ab564be0831da30fddb5_full.jpg");
-	
 	MessageEmbed Embed = new MessageEmbed();
-	
+	hook.SetUsername("Panel - BOT");
+	if (client > 0)
+	{
+		char safename[128], steamid[128], format[512], out[128];
+		GetClientName(client, safename, 128);
+		
+		GetClientAuthId(client, AuthId_Steam2, steamid, 128);
+		
+		GetCommunityID(steamid, out, 128);
+		Format(out, 128, "http://steamcommunity.com/profiles/%s", out);
+		Format(format, 512, "%s - %s", safename, steamid);
+		hook.SetUsername(format);
+		Embed.SetTitleLink(out);
+	}
+	hook.SetAvatar("https://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/b8/b80dd994a92a7ce5fdd5ab564be0831da30fddb5_full.jpg");
 	Embed.SetColor("#bf42f5");
 	Embed.SetTitle(not);
 	Embed.SetAuthorIcon("https://cdn.discordapp.com/attachments/619577045982380052/864969030229032960/google-messages.png");
 	Embed.SetAuthor("Bir yetkili not aldı !");
-	Embed.SetTitleLink(out);
 	Embed.SetFooter("-ByDexter");
-	
 	hook.Embed(Embed);
 	hook.Send();
 	delete hook;
